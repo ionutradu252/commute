@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import '../models/driver.dart';
 import '../widgets/driver_card.dart';
 
@@ -19,14 +17,9 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   GoogleMapController? _mapController;
   DriverRoute? bestMatch;
 
-  final String _apiKey = "YOUR_GOOGLE_MAPS_API_KEY"; // pune cheia ta aici
-
   Future<void> _findBestDriver() async {
     if (_fromController.text.isEmpty || _toController.text.isEmpty) return;
-
-    // Simulare: alegem primul șofer cu traseu similar
-    setState(() => bestMatch = demoDrivers[1]); // Maria Ionescu
-
+    setState(() => bestMatch = demoDrivers[1]);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Am găsit o cursă cu ${bestMatch!.name}!")),
     );
