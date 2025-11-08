@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1016811560093",
+    "project_id": "commute-b6e12",
+    "storage_bucket": "commute-b6e12.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016811560093:android:47b6d8f0ae5c881be7c874",
+        "android_client_info": {
+          "package_name": "com.example.openhack_commute"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1016811560093-09k96mm8g7mgio1ehqf3jloeqvrdf5oq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnUhVnM8gol00sVFNaqgOvqlyr4srxRhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1016811560093-09k96mm8g7mgio1ehqf3jloeqvrdf5oq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1016811560093-6tu0glbmsfgug81mfj71idlv9p53jhkt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.openhackCommute"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
