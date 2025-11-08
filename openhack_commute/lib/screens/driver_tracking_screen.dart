@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/driver.dart';
 
-// 5. Fișierul nou pe care l-am creat
+// Acest fișier este "lib/screens/driver_tracking_screen.dart"
 
 class DriverTrackingScreen extends StatefulWidget {
   final DriverRoute driver;
@@ -32,12 +32,15 @@ class _DriverTrackingScreenState extends State<DriverTrackingScreen> {
       _markers.add(
         Marker(
           markerId: MarkerId(widget.driver.licensePlate),
-          position: widget.driver.startLocation, // Folosim locația din model
+          // TODO: Aici ar trebui să fie locația LIVE a șoferului
+          // Pentru demo, folosim locația de start a șoferului
+          position: widget.driver.startLocation,
           infoWindow: InfoWindow(
             title: widget.driver.name,
             snippet: widget.driver.carModel,
           ),
           icon: _carIcon,
+          // Poți adăuga 'rotation' dacă ai ști direcția mașinii
         ),
       );
     });
@@ -55,6 +58,8 @@ class _DriverTrackingScreenState extends State<DriverTrackingScreen> {
           zoom: 15,
         ),
         markers: _markers,
+        // TODO: Într-o aplicație reală, ai actualiza poziția marker-ului
+        // folosind un Stream din Firebase (ex. Firestore.snapshots())
       ),
     );
   }

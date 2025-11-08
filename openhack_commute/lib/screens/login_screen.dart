@@ -43,14 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email sau parolă incorectă!'),
-          backgroundColor: Colors.red,
-        ),
+    }else{
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
       );
     }
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Email sau parolă incorectă!'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    // }
   }
 
   void _handleRegister() {

@@ -31,8 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  http: ^1.2.1 
-  flutter_polyline_points: ^2.0.0
+  http: ^1.2.1
 
   # Firebase
   firebase_core: ^2.32.0       # (sau ultima versiune)
@@ -47,6 +46,8 @@ dependencies:
 
   geocoding: ^3.0.0
   google_places_flutter: ^2.1.0
+
+  flutter_polyline_points: ^2.0.0
 
 
   # (probabil vei avea nevoie și de acestea pentru logică)
