@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/driver.dart';
-
-// Acest fișier este necesar pentru a face 'passenger_home_screen.dart' să compileze
+import '../screens/driver_profile_screen.dart';
 
 class DriverCard extends StatelessWidget {
   final DriverRoute driver;
@@ -9,27 +8,29 @@ class DriverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(driver.profilePicUrl),
-          onBackgroundImageError: (exception, stackTrace) {
-            // Fallback în caz că imaginea nu se încarcă
-          },
-        ),
-        title: Text(driver.name),
-        subtitle: Text("${driver.carModel} • ${driver.licensePlate}"),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "+${driver.detourMinutes.toStringAsFixed(0)} min",
-              style: const TextStyle(
-                  color: Colors.green, fontWeight: FontWeight.bold),
-            ),
-            const Text("detur"),
-          ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => DriverProfileScreen(driver: driver),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(driver.profilePicUrl),
+            radius: 25,
+          ),
+          title: Text(driver.name),
+          subtitle: Text("${driver.carModel} • ${driver.licensePlate}"),
+          trailing: Text(
+            "+${driver.detourMinutes} min ocolire",
+            style: const TextStyle(color: Colors.grey),
+          ),
         ),
       ),
     );

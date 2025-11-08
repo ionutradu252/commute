@@ -42,6 +42,13 @@ dependencies:
   # Google Maps
   google_maps_flutter: ^2.6.1  # (sau ultima versiune)
 
+  geolocator: ^12.0.0
+  permission_handler: ^11.3.1
+
+  geocoding: ^3.0.0
+  google_places_flutter: ^2.1.0
+
+
   # (probabil vei avea nevoie și de acestea pentru logică)
   # http: ^1.2.1                # Pentru a apela Directions API
   # google_places_flutter: ^2.0.4 # Ar fi o variantă, dar e neoficial

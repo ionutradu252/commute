@@ -26,7 +26,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.data == 'DRIVER') {
           return const DriverHomeScreen();
         } else {
-          return const LoginScreen();
+          return const PassengerHomeScreen();
         }
       },
     );
