@@ -10,6 +10,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import '../models/driver.dart';
 import '../widgets/driver_card.dart';
 import 'login_screen.dart';
+import 'user_profile_screen.dart';
 
 const String kGoogleApiKey = "AIzaSyDBTi9UursOW0kbzgIWy87WPgYCDxx39F0";
 
@@ -207,9 +208,18 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         title: const Text("Mod Pasager"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Log Out',
-            onPressed: () => _logout(context),
+            icon: const Icon(Icons.person_outline),
+            tooltip: 'Profil',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const UserProfileScreen(
+                    isCurrentlyDriver: false, // Îi spunem că suntem în Mod Pasager
+                    // TODO: Pasează punctele pasagerului dacă le ai
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

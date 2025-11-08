@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'passenger_home_screen.dart';
-import 'driver_home_screen.dart';
+import 'passenger_home_screen.dart'; // Importăm doar ecranul implicit
+// import 'driver_home_screen.dart'; // Nu mai este necesar aici
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,56 +10,31 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // 1. Creăm controlere pentru a citi textul
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    // 2. Curățăm controlerele când widget-ul este eliminat
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // 3. Funcția de Login
+  // --- AICI ESTE MODIFICAREA ---
   void _handleLogin() {
-    // Citim textul și îl "curățăm"
-    final String email = _emailController.text.trim().toLowerCase();
-    // final String password = _passwordController.text.trim(); // Deocamdată nu verificăm parola, dar o avem
-
-    // --- Logica de Hackathon ---
-    // Folosim email-uri fixe pentru a demonstra rolurile
-    // Testează cu:
-    // Email Șofer: sofer@commute.com
-    // Email Pasager: pasager@commute.com
-
-    if (email == 'sofer') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DriverHomeScreen()),
-      );
-    } else if (email == 'pasager') {
-      // Logare ca Pasager
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
-      );
-    }else{
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
-      );
-    }
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Email sau parolă incorectă!'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
+    // Într-o aplicație reală, ai verifica emailul și parola cu Firebase Auth
+    // Pentru demo, facem pur și simplu login.
+    
+    // String email = _emailController.text.trim().toLowerCase();
+    
+    // Nu mai verificăm rolul aici. Trimitem utilizatorul la ecranul implicit (Pasager).
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
+    );
   }
+  // --- SFÂRȘITUL MODIFICĂRII ---
 
   void _handleRegister() {
-    // TODO: Implementează navigarea către un ecran de înregistrare
     print("Navighează la înregistrare");
   }
 
@@ -92,7 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 24),
-                  // 4. Conectăm controlerele la TextField-uri
                   TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(labelText: 'Email'),
@@ -106,8 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    // 5. Apelăm funcția de login
-                    onPressed: _handleLogin,
+                    onPressed: _handleLogin, // Funcția simplificată
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 45),
                     ),
