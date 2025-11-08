@@ -6,6 +6,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+
+import 'dart:convert';
 import 'firebase_options.dart'; // Generat de Firebase CLI
 // --- Punct de intrare ---
 void main() async {
@@ -235,7 +239,139 @@ class PassengerHomeScreen extends StatefulWidget {
 }
 
 class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
+  final String _googleApiKey = 'AIzaSyDBTi9UursOW0kbzgIWy87WPgYCDxx39F0';
+  
   final LatLng _center = const LatLng(44.439663, 26.096306); // Piața Universității
+  GoogleMapController? _mapController;
+
+  // Controlere pentru TextFields
+  final _fromController = TextEditingController();
+  final _toController = TextEditingController();
+
+  // Stocare pentru markere și traseu
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Simulare: pre-luăm adresele. Într-o aplicație reală, le-ați lua din Firestore
+    // Poți folosi adrese din București pentru a testa
+    _fromController.text = "Piata Universitatii, Bucuresti"; // Simulare
+    _toController.text = "Piata Victoriei 1, Bucuresti"; // Simulare
+  }
+
+  @override
+  void dispose() {
+    _fromController.dispose();
+    _toController.dispose();
+    _mapController?.dispose();
+    super.dispose();
+  }
+
+  /// Funcția principală care cheamă API-ul și desenează traseul
+  Future<void> _getRouteAndDraw() async {
+    String fromAddress = _fromController.text;
+    String toAddress = _toController.text;
+
+    if (fromAddress.isEmpty || toAddress.isEmpty) {
+      // Oprește dacă nu sunt adrese
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Introduceți adresa de plecare și destinația')),
+      );
+      return;
+    }
+
+    // Curăță harta veche
+    setState(() {
+      _markers.clear();
+      _polylines.clear();
+    });
+
+    try {
+      // Construiește URL-ul pentru Directions API
+      String url =
+          'https://maps.googleapis.com/maps/api/directions/json?origin=$fromAddress&destination=$toAddress&key=$_googleApiKey';
+      
+      // Fă requestul HTTP
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['routes'].isNotEmpty) {
+          var route = jsonResponse['routes'][0];
+
+          // --- Preluare Polyline (traseul) ---
+          var points = PolylinePoints();
+          List<PointLatLng> decodedPolyline =
+              points.decodePolyline(route['overview_polyline']['points']);
+          
+          List<LatLng> polylineCoordinates = decodedPolyline.map((point) {
+            return LatLng(point.latitude, point.longitude);
+          }).toList();
+
+          // --- Preluare Markere (start/sfârșit) ---
+          var startLocation = route['legs'][0]['start_location'];
+          var endLocation = route['legs'][0]['end_location'];
+          LatLng startLatLng = LatLng(startLocation['lat'], startLocation['lng']);
+          LatLng endLatLng = LatLng(endLocation['lat'], endLocation['lng']);
+
+          // --- Preluare Limite (pentru zoom) ---
+          var bounds = route['bounds'];
+          LatLng southwest = LatLng(bounds['southwest']['lat'], bounds['southwest']['lng']);
+          LatLng northeast = LatLng(bounds['northeast']['lat'], bounds['northeast']['lng']);
+
+          // --- Actualizează Starea (UI-ul) ---
+          setState(() {
+            _markers.add(
+              Marker(
+                markerId: const MarkerId('start'),
+                position: startLatLng,
+                infoWindow: InfoWindow(title: 'De la', snippet: fromAddress),
+              ),
+            );
+            _markers.add(
+              Marker(
+                markerId: const MarkerId('end'),
+                position: endLatLng,
+                infoWindow: InfoWindow(title: 'Până la', snippet: toAddress),
+              ),
+            );
+
+            _polylines.add(
+              Polyline(
+                polylineId: const PolylineId('route'),
+                points: polylineCoordinates,
+                color: Colors.teal,
+                width: 5,
+              ),
+            );
+          });
+
+          // --- Mișcă Camera ---
+          _mapController?.animateCamera(
+            CameraUpdate.newLatLngBounds(
+              LatLngBounds(southwest: southwest, northeast: northeast),
+              50.0, // padding
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Niciun traseu găsit.')),
+          );
+        }
+      } else {
+         ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Eroare la apelul API Directions')),
+          );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('A apărut o eroare: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +381,12 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(target: _center, zoom: 12.0),
+            // Legăm funcțiile și variabilele de hartă
+            onMapCreated: (GoogleMapController controller) {
+              _mapController = controller;
+            },
+            markers: _markers,
+            polylines: _polylines,
           ),
           Positioned(
             bottom: 20,
@@ -262,22 +404,22 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
-                    // TODO: Folosiți adresele salvate (Acasă/Birou)
-                    const TextField(
-                        decoration: InputDecoration(
-                            labelText: 'De la (Acasă)', filled: true)),
+                    // Conectăm Controlerele la TextField-uri
+                    TextField(
+                      controller: _fromController,
+                      decoration: const InputDecoration(
+                          labelText: 'De la (Acasă)', filled: true),
+                    ),
                     const SizedBox(height: 10),
-                    const TextField(
-                        decoration: InputDecoration(
-                            labelText: 'La (Birou)', filled: true)),
+                    TextField(
+                      controller: _toController,
+                      decoration: const InputDecoration(
+                          labelText: 'La (Birou)', filled: true),
+                    ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implementează logica de căutare
-                        // 1. Caută în 'driver_routes'
-                        // 2. Aplică algoritmul de potrivire "AI"
-                        // 3. Afișează un ecran cu rezultate
-                      },
+                      // Apelăm funcția la apăsare
+                      onPressed: _getRouteAndDraw,
                       child: const Text('Găsește Cursă'),
                     )
                   ],
