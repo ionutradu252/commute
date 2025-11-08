@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/driver.dart';
 
+// Acest fișier este necesar pentru a face 'passenger_home_screen.dart' să compileze
+
 class DriverCard extends StatelessWidget {
   final DriverRoute driver;
   const DriverCard({super.key, required this.driver});
@@ -8,36 +10,25 @@ class DriverCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.teal.shade50,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      elevation: 2,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(driver.profilePicUrl),
+          onBackgroundImageError: (exception, stackTrace) {
+            // Fallback în caz că imaginea nu se încarcă
+          },
+        ),
+        title: Text(driver.name),
+        subtitle: Text("${driver.carModel} • ${driver.licensePlate}"),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(driver.name,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text("${driver.car} • Plecare: ${driver.departureTime}"),
-            const SizedBox(height: 4),
-            Text("Locuri disponibile: ${driver.availableSeats}"),
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Contactat ${driver.name} 📞")),
-                );
-              },
-              icon: const Icon(Icons.phone),
-              label: const Text("Contactează"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 40),
-              ),
-            )
+            Text(
+              "+${driver.detourMinutes.toStringAsFixed(0)} min",
+              style: const TextStyle(
+                  color: Colors.green, fontWeight: FontWeight.bold),
+            ),
+            const Text("detur"),
           ],
         ),
       ),

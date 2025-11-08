@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/driver.dart';
 import '../widgets/driver_card.dart';
+import 'login_screen.dart'; // 1. Importăm ecranul de login
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -17,6 +18,14 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   GoogleMapController? _mapController;
   DriverRoute? bestMatch;
 
+  // 2. Funcție de logout
+  void _logout(BuildContext context) {
+    // Navigăm înapoi la LoginScreen și ștergem istoria de navigare
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
   Future<void> _findBestDriver() async {
     if (_fromController.text.isEmpty || _toController.text.isEmpty) return;
     setState(() => bestMatch = demoDrivers[1]);
@@ -28,7 +37,17 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Mod Pasager")),
+      appBar: AppBar(
+        title: const Text("Mod Pasager"),
+        // 3. Adăugăm butonul de logout aici
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Log Out',
+            onPressed: () => _logout(context), // Apelăm funcția de logout
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           GoogleMap(

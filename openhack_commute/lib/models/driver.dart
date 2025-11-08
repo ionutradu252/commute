@@ -1,49 +1,37 @@
+import 'package:flutter/material.dart';
+
+// Acest fișier este necesar pentru a face 'passenger_home_screen.dart' să compileze
+
 class DriverRoute {
   final String name;
-  final String car;
-  final String startAddress;
-  final String endAddress;
-  final String departureTime;
-  final int availableSeats;
-  final String phone;
+  final String carModel;
+  final String licensePlate;
+  final double detourMinutes;
+  final String profilePicUrl;
 
   DriverRoute({
     required this.name,
-    required this.car,
-    required this.startAddress,
-    required this.endAddress,
-    required this.departureTime,
-    required this.availableSeats,
-    required this.phone,
+    required this.carModel,
+    required this.licensePlate,
+    required this.detourMinutes,
+    required this.profilePicUrl,
   });
 }
 
-final demoDrivers = [
+// Date demo pentru a simula căutarea
+final List<DriverRoute> demoDrivers = [
   DriverRoute(
-    name: "Andrei Popescu",
-    car: "Dacia Spring",
-    startAddress: "Bulevardul Iuliu Maniu 100, București",
-    endAddress: "Piața Victoriei, București",
-    departureTime: "08:00",
-    availableSeats: 2,
-    phone: "0723456789",
+    name: "Mihai Popescu",
+    carModel: "Dacia Logan",
+    licensePlate: "B 123 ABC",
+    detourMinutes: 5.0,
+    profilePicUrl: "https://placehold.co/100x100/teal/white?text=MP",
   ),
   DriverRoute(
-    name: "Maria Ionescu",
-    car: "VW Golf 7",
-    startAddress: "Strada Mihai Bravu 200, București",
-    endAddress: "Piața Unirii, București",
-    departureTime: "08:30",
-    availableSeats: 3,
-    phone: "0729876543",
-  ),
-  DriverRoute(
-    name: "George Enache",
-    car: "Tesla Model 3",
-    startAddress: "Bd. Nicolae Grigorescu, București",
-    endAddress: "Piața Victoriei, București",
-    departureTime: "09:00",
-    availableSeats: 1,
-    phone: "0731112233",
+    name: "Ana Ionescu",
+    carModel: "VW Golf",
+    licensePlate: "B 456 XYZ",
+    detourMinutes: 7.5,
+    profilePicUrl: "https://placehold.co/100x100/orange/white?text=AI",
   ),
 ];

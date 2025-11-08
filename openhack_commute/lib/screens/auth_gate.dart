@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'driver_home_screen.dart';
 import 'passenger_home_screen.dart';
+import 'login_screen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.data == 'DRIVER') {
           return const DriverHomeScreen();
         } else {
-          return const PassengerHomeScreen();
+          return const LoginScreen();
         }
       },
     );

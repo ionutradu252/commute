@@ -1,7 +1,62 @@
 import 'package:flutter/material.dart';
+import 'passenger_home_screen.dart';
+import 'driver_home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  // 1. Creăm controlere pentru a citi textul
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // 2. Curățăm controlerele când widget-ul este eliminat
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // 3. Funcția de Login
+  void _handleLogin() {
+    // Citim textul și îl "curățăm"
+    final String email = _emailController.text.trim().toLowerCase();
+    // final String password = _passwordController.text.trim(); // Deocamdată nu verificăm parola, dar o avem
+
+    // --- Logica de Hackathon ---
+    // Folosim email-uri fixe pentru a demonstra rolurile
+    // Testează cu:
+    // Email Șofer: sofer@commute.com
+    // Email Pasager: pasager@commute.com
+
+    if (email == 'sofer') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const DriverHomeScreen()),
+      );
+    } else if (email == 'pasager') {
+      // Logare ca Pasager
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email sau parolă incorectă!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _handleRegister() {
+    // TODO: Implementează navigarea către un ecran de înregistrare
+    print("Navighează la înregistrare");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,22 +87,29 @@ class LoginScreen extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 24),
-                  const TextField(decoration: InputDecoration(labelText: 'Email')),
+                  // 4. Conectăm controlerele la TextField-uri
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                   const SizedBox(height: 10),
-                  const TextField(
-                    decoration: InputDecoration(labelText: 'Parolă'),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Parolă'),
                     obscureText: true,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () {},
+                    // 5. Apelăm funcția de login
+                    onPressed: _handleLogin,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 45),
                     ),
                     child: const Text("Login"),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _handleRegister,
                     child: const Text("Nu ai cont? Înregistrează-te"),
                   ),
                 ],
