@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:openhack_commute/screens/login_screen.dart';
+import 'package:openhack_commute/screens/login_screen.dart'; // Make sure this path is correct
 import 'firebase_options.dart';
 
 void main() async {
@@ -47,30 +47,66 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
+      // --- MODIFICATION: Replaced navigation with a PageRouteBuilder ---
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        // This creates a fade transition instead of the default slide
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const LoginScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 600), // Adjust speed
+        ),
       );
+      // --- END OF MODIFICATION ---
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal,
-      body: const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.directions_car, color: Colors.white, size: 90),
-            SizedBox(height: 16),
-            Text("Commute",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold)),
-          ],
-        ),
+      // --- MODIFICARE: Folosim Stack pentru a pune imaginea de fundal ---
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Imaginea de fundal (folosește assets/bg.png sau o altă imagine mare)
+          // Presupunând că ai o imagine de fundal locală numită 'bg_splash.jpg'
+          Image.asset(
+            'assets/bg.png', // ASIGURĂ-TE că ai acest fișier în assets/
+            fit: BoxFit.cover,
+            // Adăugăm un filtru pentru estompare și întunecare
+            colorBlendMode: BlendMode.darken,
+            color: Colors.black.withOpacity(0.6),
+          ),
+          
+          // 2. Logo-ul (centrat)
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Hero(
+                  tag: 'logo-hero',
+                  child: Image.asset(
+                    'assets/logo.png', // Logo-ul tău principal
+                    width: 200.0,
+                    height: 200.0,
+                  ),
+                ),
+                // const SizedBox(height: 16),
+                // const Text("Commute",
+                //     style: TextStyle(
+                //         color: Colors.white,
+                //         fontSize: 30,
+                //         fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

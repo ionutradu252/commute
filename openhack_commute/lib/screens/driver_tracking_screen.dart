@@ -48,7 +48,17 @@ class _DriverTrackingScreenState extends State<DriverTrackingScreen> {
   void initState() {
     super.initState();
     _driverPosition = widget.driver.startLocation;
+    _loadCarIcon();
     _loadResourcesAndStart();
+  }
+
+  
+  Future<void> _loadCarIcon() async {
+    _carIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(32, 32)), // Adjust size as needed
+      'assets/car.png', // **Replace with your actual asset path**
+    );
+    setState(() {});
   }
 
   Future<void> _loadResourcesAndStart() async {

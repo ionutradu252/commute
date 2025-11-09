@@ -56,6 +56,34 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
+  void _showAboutDialog() {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text("Despre noi"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text("🏆 Eveniment: Openhack 2025"),
+          SizedBox(height: 8),
+          Text("👥 Echipa: IDCrew"),
+          SizedBox(height: 8),
+          Text("👤 Membri:\n- Radu Ionuț\n- Coman Cezar"),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Închide"),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,6 +184,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     );
                   },
                 ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: Icon(Icons.info, color: Colors.purple[600]),
+                    title: const Text("Despre noi",
+                        style: TextStyle(fontWeight: FontWeight.w500)),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: _showAboutDialog,
+                  ),
               ],
             ),
           ),

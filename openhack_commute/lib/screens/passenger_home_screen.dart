@@ -9,7 +9,6 @@ import 'package:google_places_flutter/model/prediction.dart';
 
 import '../models/driver.dart';
 import '../widgets/driver_card.dart';
-import 'login_screen.dart';
 import 'user_profile_screen.dart';
 
 const String kGoogleApiKey = "AIzaSyDBTi9UursOW0kbzgIWy87WPgYCDxx39F0";
@@ -86,13 +85,6 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     }
   }
 
-  void _logout(BuildContext context) {
-    // ... (Funcția rămâne neschimbată) ...
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-  }
-
   LatLng _randomNearbyPoint(LatLng center, double radiusMeters) {
     // ... (Funcția rămâne neschimbată) ...
     final random = Random();
@@ -123,7 +115,6 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     // 🚗 Simulăm 3 șoferi.
     // Într-o aplicație reală, aici ai face un apel API
     // care ar întoarce o listă de șoferi potriviți.
-    final random = Random();
     List<DriverRoute> drivers = [
       DriverRoute(
         name: "Mihai Andrei",

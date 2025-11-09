@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'passenger_home_screen.dart'; // Importăm doar ecranul implicit
-// import 'driver_home_screen.dart'; // Nu mai este necesar aici
+import 'passenger_home_screen.dart'; // Make sure this path is correct
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,19 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // --- AICI ESTE MODIFICAREA ---
   void _handleLogin() {
-    // Într-o aplicație reală, ai verifica emailul și parola cu Firebase Auth
-    // Pentru demo, facem pur și simplu login.
-    
-    // String email = _emailController.text.trim().toLowerCase();
-    
-    // Nu mai verificăm rolul aici. Trimitem utilizatorul la ecranul implicit (Pasager).
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const PassengerHomeScreen()),
     );
   }
-  // --- SFÂRȘITUL MODIFICĂRII ---
 
   void _handleRegister() {
     print("Navighează la înregistrare");
@@ -42,11 +33,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF00695C), Color(0xFF26A69A)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            // Asigură-te că numele fișierului este corect
+            image: const AssetImage('assets/bg.png'), 
+            fit: BoxFit.cover,
+            // Aplicăm același filtru de estompare ca pe splash screen
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.4),
+              BlendMode.darken,
+            ),
           ),
         ),
         child: Center(
@@ -55,18 +51,23 @@ class _LoginScreenState extends State<LoginScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 32),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: Colors.white.withOpacity(0.8),
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.directions_car,
-                      size: 60, color: Colors.teal),
+                  // --- MODIFICATION: Wrapped Image in a matching Hero ---
+                  Hero(
+                    tag: 'logo-hero', // This tag MUST match the one on SplashScreen
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 100.0,
+                      height: 100.0,
+                    ),
+                  ),
+                  // --- END OF MODIFICATION ---
                   const SizedBox(height: 16),
-                  const Text("Commute",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 24),
                   TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(labelText: 'Email'),
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: _handleLogin, // Funcția simplificată
+                    onPressed: _handleLogin,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 45),
                     ),
