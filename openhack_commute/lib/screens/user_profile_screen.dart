@@ -122,7 +122,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       Icon(_isDriverMode ? Icons.drive_eta : Icons.search),
                   value: _isDriverMode,
                   onChanged: _toggleMode,
-                  activeColor: Colors.teal,
+                  activeThumbColor: Colors.teal,
                 ),
                 const Divider(height: 1, indent: 16, endIndent: 16),
 

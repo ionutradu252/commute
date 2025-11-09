@@ -129,8 +129,9 @@ class _DriverTrackingScreenState extends State<DriverTrackingScreen> {
 
     int index = (t * (_driverPolylinePoints.length - 1)).floor();
     if (index < 0) index = 0;
-    if (index > _driverPolylinePoints.length - 2)
+    if (index > _driverPolylinePoints.length - 2) {
       index = _driverPolylinePoints.length - 2;
+    }
 
     final LatLng pos1 = _driverPolylinePoints[index];
     final LatLng pos2 = _driverPolylinePoints[index + 1];

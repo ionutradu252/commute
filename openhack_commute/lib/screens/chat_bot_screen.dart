@@ -54,8 +54,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
     // --- AICI ESTE APELUL SECURIZAT CĂTRE BACKEND ---
     // Numele funcției tale Firebase (vezi Pasul 3)
-    const String cloudFunctionUrl = "https://getchatreply-twkx4wj5za-uc.a.run.app";
-
+    const String cloudFunctionUrl = "https://getchatreply-acc4fsa4ia-uc.a.run.app";
     try {
       final response = await http.post(
         Uri.parse(cloudFunctionUrl),

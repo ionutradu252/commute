@@ -19,7 +19,7 @@ void main() async {
 }
 
 class CommuteApp extends StatelessWidget {
-  const CommuteApp({Key? key}) : super(key: key);
+  const CommuteApp({super.key});
 
   @override
   Widget build(BuildContext context) {

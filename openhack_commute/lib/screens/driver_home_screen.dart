@@ -6,7 +6,6 @@ import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:intl/intl.dart';
 import 'login_screen.dart';
 import 'rewards_screen.dart';
 import 'user_profile_screen.dart';
@@ -54,7 +53,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   final Set<Marker> _markers = {};
   String? _etaMessage;
 
-  List<MockPassenger> _mockPassengers = [];
+  final List<MockPassenger> _mockPassengers = [];
   int _totalPointsFromRide = 0;
 
   // --- Stări noi pentru încărcare ---

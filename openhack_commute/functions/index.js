@@ -1,83 +1,77 @@
-const {onRequest} = require("firebase-functions/v2/https");
-const {defineSecret} = require("firebase-functions/params");
+const { onRequest } = require("firebase-functions/v2/https");
+const { defineSecret } = require("firebase-functions/params");
 const https = require("https");
 
-// defineSecret — creează o variabilă secretă securizată
-const openAiKey = defineSecret("OPENAI_API_KEY");
+// 1️⃣ Definește secretul
+const geminiKey = defineSecret("GEMINI_API_KEY");
 
 exports.getChatReply = onRequest(
-    // --- AICI ESTE MODIFICAREA ---
-    // 1. Am adăugat 'cors: true'.
-    // Această opțiune îi spune Firebase să gestioneze automat cererile
-    // 'OPTIONS' (pre-flight) și să seteze 'Access-Control-Allow-Origin'.
-    {
-      secrets: [openAiKey],
-      cors: true, // Permite cereri de la orice origine
-      // Pentru producție, ai putea restricționa:
-      // cors: ["https://adresa-ta-web.com"],
-    },
-    // --- SFÂRȘITUL MODIFICĂRII ---
-    (req, res) => {
-      // 2. AM ȘTERS BLOCUL TĂU MANUAL DE CORS
-      // Liniile 'res.set("...")' și 'if (req.method === "OPTIONS")'
-      // nu mai sunt necesare.
+  { secrets: [geminiKey], cors: true },
+  (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
 
-      if (req.method !== "POST") {
-        res.status(405).send("Method Not Allowed");
-        return;
-      }
+    const userPrompt = req.body.prompt;
+    if (!userPrompt) {
+      res.status(400).send({ error: "Prompt-ul lipsește." });
+      return;
+    }
 
-      const userPrompt = req.body.prompt;
-      if (!userPrompt) {
-        res.status(400).send({error: "Prompt-ul lipsește."});
-        return;
-      }
+    // 2️⃣ Construiește prompt-ul
+    const fullPrompt = `Ești un asistent util pentru o aplicație de carpooling numită Commute.
+Răspunde scurt și la obiect. Întrebarea utilizatorului este: ${userPrompt}`;
 
-      const systemMessage =
-      "Ești un asistent util pentru o aplicație de carpooling numită Commute." +
-      "Răspunde scurt și la obiect.";
+    // 3️⃣ Creează corpul cererii (JSON)
+    const postData = JSON.stringify({
+      contents: [{ parts: [{ text: fullPrompt }] }],
+    });
 
-      const postData = JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {role: "system", content: systemMessage},
-          {role: "user", content: userPrompt},
-        ],
+    // 4️⃣ Setează endpoint-ul și cheia corectă
+    const options = {
+      hostname: "generativelanguage.googleapis.com",
+      path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey.value()}`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    // 5️⃣ Fă cererea HTTPS
+    const geminiReq = https.request(options, (geminiRes) => {
+      let data = "";
+      geminiRes.on("data", (chunk) => {
+        data += chunk;
       });
 
-      const options = {
-        hostname: "api.openai.com",
-        path: "/v1/chat/completions",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${openAiKey.value()}`,
-        },
-      };
+      geminiRes.on("end", () => {
+        console.log("Răspuns brut de la Gemini:", data);
+        try {
+          const jsonResponse = JSON.parse(data);
+          const reply =
+            jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      const openaiReq = https.request(options, (openaiRes) => {
-        let data = "";
-        openaiRes.on("data", (chunk) => {
-          data += chunk;
-        });
-        openaiRes.on("end", () => {
-          try {
-            const jsonResponse = JSON.parse(data);
-            const reply = jsonResponse.choices[0].message.content;
-            res.status(200).send({reply: reply.trim()});
-          } catch (err) {
-            console.error("Eroare la parsare:", err, data);
-            res.status(500).send({error: "Eroare la OpenAI."});
+          if (!reply) {
+            throw new Error("Răspuns gol sau format necunoscut de la Gemini.");
           }
-        });
-      });
 
-      openaiReq.on("error", (err) => {
-        console.error("Eroare la request:", err);
-        res.status(500).send({error: "Eroare server."});
+          res.status(200).send({ reply: reply.trim() });
+        } catch (err) {
+          console.error("Eroare la parsarea JSON de la Gemini:", err, data);
+          res
+            .status(500)
+            .send({ error: "Eroare la interpretarea răspunsului Gemini." });
+        }
       });
+    });
 
-      openaiReq.write(postData);
-      openaiReq.end();
-    },
+    geminiReq.on("error", (err) => {
+      console.error("Eroare la requestul HTTPS:", err);
+      res.status(500).send({ error: "Eroare server (request Gemini)." });
+    });
+
+    geminiReq.write(postData);
+    geminiReq.end();
+  }
 );
