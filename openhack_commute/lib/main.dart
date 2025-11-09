@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:openhack_commute/screens/login_screen.dart'; // Make sure this path is correct
+import 'package:video_player/video_player.dart'; // 1. Importă pachetul video
+import 'package:openhack_commute/screens/login_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -42,72 +43,101 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+// --- AICI ÎNCEPE MODIFICAREA ---
 class _SplashScreenState extends State<SplashScreen> {
+  late VideoPlayerController _controller;
+  bool _videoInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      // --- MODIFICATION: Replaced navigation with a PageRouteBuilder ---
-      Navigator.pushReplacement(
-        context,
-        // This creates a fade transition instead of the default slide
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const LoginScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 600), // Adjust speed
-        ),
-      );
-      // --- END OF MODIFICATION ---
-    });
+    // 2. Inițializează controller-ul video
+    _controller = VideoPlayerController.asset('assets/loading.mp4')
+      ..initialize().then((_) {
+        // Asigură-te că widget-ul este construit după ce videoclipul e gata
+        setState(() {
+          _videoInitialized = true;
+        });
+        _controller.play(); // Pornește videoclipul
+      });
+
+    // 3. Adaugă un listener pentru a naviga când se termină
+    _controller.addListener(_videoListener);
+  }
+
+  void _videoListener() {
+    // Verifică dacă videoclipul s-a terminat
+    if (_controller.value.position >= _controller.value.duration && _videoInitialized) {
+      // Oprește listener-ul ca să nu navigheze de mai multe ori
+      _controller.removeListener(_videoListener); 
+      _navigateToLogin();
+    }
+  }
+
+  void _navigateToLogin() {
+    // Folosim tranziția ta cu Fade pe care o aveai deja
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const LoginScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    // 4. Curăță resursele
+    _controller.removeListener(_videoListener);
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // --- MODIFICARE: Folosim Stack pentru a pune imaginea de fundal ---
+      backgroundColor: Colors.black, // Fundal negru
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Imaginea de fundal (folosește assets/bg.png sau o altă imagine mare)
-          // Presupunând că ai o imagine de fundal locală numită 'bg_splash.jpg'
-          Image.asset(
-            'assets/bg.png', // ASIGURĂ-TE că ai acest fișier în assets/
-            fit: BoxFit.cover,
-            // Adăugăm un filtru pentru estompare și întunecare
-            colorBlendMode: BlendMode.darken,
-            color: Colors.black.withOpacity(0.6),
-          ),
-          
-          // 2. Logo-ul (centrat)
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Hero(
-                  tag: 'logo-hero',
-                  child: Image.asset(
-                    'assets/logo.png', // Logo-ul tău principal
-                    width: 200.0,
-                    height: 200.0,
-                  ),
-                ),
-                // const SizedBox(height: 16),
-                // const Text("Commute",
-                //     style: TextStyle(
-                //         color: Colors.white,
-                //         fontSize: 30,
-                //         fontWeight: FontWeight.bold)),
-              ],
+          // 5. Afișează videoclipul sau un spinner
+          if (_videoInitialized)
+            FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _controller.value.size.width,
+                height: _controller.value.size.height,
+                child: VideoPlayer(_controller),
+              ),
+            )
+          else
+            const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
             ),
-          ),
+          
+          // (Opțional) Poți adăuga logo-ul Hero peste videoclip, dacă dorești
+          // Center(
+          //   child: Hero(
+          //     tag: 'logo-hero',
+          //     child: Image.asset(
+          //       'assets/logo.png',
+          //       width: 200.0,
+          //       height: 200.0,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
   }
 }
+// --- SFÂRȘITUL MODIFICĂRII ---
